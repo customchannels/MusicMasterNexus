@@ -1,0 +1,12 @@
+{
+    "name": "customchannels/MusicMasterNexus",
+    "description": "PHP Library for interacting with MusicMaster Nexus server",
+    "require": {
+        "php": ">=5.5.9",
+        "vinelab/http": "dev-master"
+    },
+    "autoload": {
+        "psr-0" : {
+            "MMNexus\\" : "src"
+        }
+}
