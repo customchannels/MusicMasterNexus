@@ -9,4 +9,5 @@
         "psr-0" : {
             "MMNexus\\" : "src"
         }
+    }
 }
