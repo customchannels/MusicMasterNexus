@@ -4,8 +4,6 @@
  * Created by: Kurt Oleson
  */
 
-Namespace App;
-
 use Vinelab\Http\Client as HttpClient;
 
 class MMNexus 
@@ -130,7 +128,7 @@ class MMNexus
 		$request = '<mmRequest command="updateSongs" station='.$this->station.'>
 					   <contents>
 					       <songList>
-					          <song songId='.$song_id.' />
+					          <song songId="'.$song_id.'" />
 					             <field name='.$field.'>'.$value.'</field>
 					          </song>
 					       </songList>
@@ -143,7 +141,7 @@ class MMNexus
 		$json = json_encode($xml);
 		$result = json_decode($json,TRUE);
 
-		if (!$result['@attributes']['status'] == 'ok') {
+		if ($result['@attributes']['status'] !== 'ok') {
 			return false;
 		} else {
 			return true;
@@ -156,43 +154,41 @@ class MMNexus
 
 		if ($search['contents']['songList']['@attributes']['recordCount'] !== "0") 
 		{
-			return false;
-		}
-
-		$request = '<mmRequest command="importSongs" station="'.$this->station.'">
-		               <contents>
-		                   <songList>
-		                      <song>
-		                         <field name="Category">NEW</field>
-		                         <field name="File Path">M:\</field>
-		                         <field name="Xen Path">M:\Music\</field>
-		                         <field name="File Name">'.$song_info['name'].'.mp3</field>
-		                         <field name="Artist">'.$song_info['artist'].'</field>
-		                         <field name="Title">'.$song_info['title'].'</field>
-		                         <field name="Album">'.$song_info['album'].'</field>
-		                         <field name="Peak Year">'.$song_info['year'].'</field>
-		                         <field name="Label">'.$song_info['publisher'].'</field>
-		                         <field name="Run Time">'.$song_info['length'].'</field>
-		                         <field name="BitRate">'.$song_info['bitrate'].'</field>
-		                      </song>
-		                   </songList>
-		               </contents>
-		            </mmRequest>';
-
-		$response = $this->HttpClient->post(['url' => $this->server_address, 'content' => $request]);
-
-		$xml = simplexml_load_string($response->content());
-		$json = json_encode($xml);
-		$result = json_decode($json,TRUE);
-
-		if ($result['@attributes']['status'] !== 'ok') {
-
-			return false;
+			echo 'Song Already in MusicMaster';
 
 		} else {
 
-			return true;
+			$request = '<mmRequest command="importSongs" station="'.$this->station.'">
+			               <contents>
+			                   <songList>
+			                      <song>
+			                         <field name="Category">NEW</field>
+			                         <field name="File Path">M:\</field>
+			                         <field name="Xen Path">M:\Music\</field>
+			                         <field name="File Name">'.$song_info['name'].'.mp3</field>
+			                         <field name="Artist">'.$song_info['artist'].'</field>
+			                         <field name="Title">'.$song_info['title'].'</field>
+			                         <field name="Album">'.$song_info['album'].'</field>
+			                         <field name="Peak Year">'.$song_info['year'].'</field>
+			                         <field name="Label">'.$song_info['publisher'].'</field>
+			                         <field name="Run Time">'.$song_info['length'].'</field>
+			                         <field name="BitRate">'.$song_info['bitrate'].'</field>
+			                      </song>
+			                   </songList>
+			               </contents>
+			            </mmRequest>';
 
+			$response = $this->HttpClient->post(['url' => $this->server_address, 'content' => $request]);
+
+			$xml = simplexml_load_string($response->content());
+			$json = json_encode($xml);
+			$result = json_decode($json,TRUE);
+
+			if ($result['@attributes']['status'] !== 'ok') {
+
+				return false;
+			}
 		}
+			return true;
 	}
 }
