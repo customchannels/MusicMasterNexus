@@ -4,6 +4,8 @@
  * Created by: Kurt Oleson
  */
 
+namespace App;
+
 use Vinelab\Http\Client as HttpClient;
 
 class MMNexus 
@@ -46,7 +48,7 @@ class MMNexus
 
 		$result = $this->songSearch($song);
 
-		if ($result['contents']['songList']['@attributes']['recordCount'] !== 0) 
+		if ($result['contents']['songList']['@attributes']['recordCount'] !== "0") 
 		{
 			$song_id = $result['contents']['songList']['song']['@attributes']['songId'];
 		}
@@ -125,22 +127,24 @@ class MMNexus
 	{
 		$song_id = $this->getSongId($song);
 
-		$request = '<mmRequest command="updateSongs" station='.$this->station.'>
+		$request = '<mmRequest command="updateSongs" station="'.$this->station.'">
 					   <contents>
 					       <songList>
-					          <song songId="'.$song_id.'" />
-					             <field name='.$field.'>'.$value.'</field>
+					          <song songId="'.$song_id.'" >
+					             <field name="'.$field.'">'.$value.'</field>
 					          </song>
 					       </songList>
 					   </contents>
 					</mmRequest>';
 
+		// echo $request;
 		$response = $this->HttpClient->post(['url' => $this->server_address, 'content' => $request]);
 
 		$xml = simplexml_load_string($response->content());
 		$json = json_encode($xml);
 		$result = json_decode($json,TRUE);
 
+		// echo var_dump($result);
 		if ($result['@attributes']['status'] !== 'ok') {
 			return false;
 		} else {
@@ -151,10 +155,11 @@ class MMNexus
 	public function uploadSongInfo($song_info)
 	{
 		$search = $this->songSearch($song_info['name']);
+		// echo var_dump($search);
 
 		if ($search['contents']['songList']['@attributes']['recordCount'] !== "0") 
 		{
-			echo 'Song Already in MusicMaster';
+			echo 'Song Already in MusicMaster'.PHP_EOL;
 
 		} else {
 
